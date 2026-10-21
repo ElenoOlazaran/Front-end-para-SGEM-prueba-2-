@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Control Docente</title>
+    <!-- Enlace a tu CSS global -->
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <!-- Menú Lateral (Sidebar) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>👨‍🏫 Control Docente</h2>
+        </div>
+        <!-- Los IDs de los botones coinciden con el nombre de las vistas -->
+        <div class="menu-item activo" id="btn-inicio" onclick="cargarVista('inicio')">
+            <span>🏠 Inicio / Dashboard</span>
+        </div>
+        <div class="menu-item" id="btn-diario" onclick="cargarVista('diario')">
+            <span>✅ Control Diario</span>
+        </div>
+        <div class="menu-item" id="btn-grupos" onclick="cargarVista('grupos')">
+            <span>👥 Mis Grupos</span>
+        </div>
+        <div class="menu-item" id="btn-escuelas" onclick="cargarVista('escuelas')">
+            <span>🏛️ Escuelas</span>
+        </div>
+        <div class="menu-item" id="btn-ciclos" onclick="cargarVista('ciclos')">
+            <span>📅 Ciclos Escolares</span>
+        </div>
+        <div class="menu-item" id="btn-reportes" onclick="cargarVista('reportes')">
+            <span>🗂️ Reportes (Historial)</span>
+        </div>
+
+        
+        <div class="sidebar-footer">
+            <div class="menu-item" id="btn-configuracion" onclick="cargarVista('configuracion')">
+                <span>⚙️ Configuración</span>
+            </div>
+            <div class="menu-item" id="btn-salir">
+                <span>🚪 Cerrar Sesión</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal (Aquí se inyectarán las demás interfaces) -->
+    <main class="main-content" id="contenido-principal">
+        <!-- El contenido se carga dinámicamente vía JavaScript -->
+    </main>
+
+    <!-- Enlace a tu JavaScript principal -->
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!-- vistas/inicio.html -->
+
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+    <div style="display: flex; flex-direction: column;">
+        <!-- Filtro de Contexto Pasivo (Ciclo Escolar) -->
+        <div style="margin-bottom: 8px;">
+            <label style="font-size: 11px; font-weight: bold; color: var(--texto-secundario); text-transform: uppercase;">Ciclo Escolar Activo:</label>
+            <select id="selector-ciclo-inicio" style="border: none; background: transparent; font-size: 13px; font-weight: bold; color: var(--guinda); cursor: pointer; outline: none; padding-left: 5px;">
+                <!-- VACÍO: se llena con los ciclos activos que devuelve URL_API_CICLOS -->
+                <option disabled selected>Cargando ciclo...</option>
+            </select>
+        </div>
+        <h1 id="titulo-inicio" style="margin: 0; font-size: 28px; color: var(--texto-principal);">Resumen de tu Jornada</h1>
+        <p id="subtitulo-inicio" style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Bienvenido. Este es tu panorama de clases y pendientes de hoy.</p>
+    </div>
+    <!-- Botón de acceso rápido al motor del sistema -->
+    <button style="background-color: var(--guinda); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;" onclick="cargarVista('diario')">✅ Ir al Control Diario</button>
+</div>
+
+<!-- Layout Principal (2 Columnas) -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+    
+<!-- COLUMNA IZQUIERDA: Asistente de Horario (contenedores vacíos, se llenan vía fetch()) -->
+    <div id="col-agenda" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Clase en curso (JSON: claseActual) -->
+        <div id="contenedor-clase-actual" style="background: #f0fdf4; border-radius: 12px; padding: 25px; border-left: 6px solid var(--verde-bandera); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);"></div>
+
+        <!-- Próximas clases (JSON: proximas[]) -->
+        <div id="contenedor-proximas-clases" style="display: flex; flex-direction: column; gap: 20px;"></div>
+    </div>
+
+    <!-- COLUMNA DERECHA: Organización (Solo Lectura) -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Panel de Recordatorios Globales (Institucional: Dorado/Arena) -->
+        <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border-top: 4px solid var(--dorado); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="margin-bottom: 15px; border-bottom: 1px solid var(--borde); padding-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal);">📌 Notas y Recordatorios</h3>
+                <p style="margin: 2px 0 0 0; color: var(--texto-secundario); font-size: 12px;">Modo de visualización global</p>
+            </div>
+            
+            <!-- Recordatorios dinámicos: el motor SPA inyecta loader -> tarjetas -> estado vacío -->
+            <ul id="contenedor-recordatorios" style="list-style: none; padding: 0; margin: 0; font-size: 13px; color: var(--texto-principal);"></ul>
+            
+            <!-- Mensaje de UX para justificar el Solo Lectura -->
+            <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--borde);">
+                <span style="font-size: 11px; color: var(--texto-secundario);">Para agregar o modificar notas, ingresa al dashboard del grupo correspondiente.</span>
+            </div>
+        </div>
+        
+    </div>
+</div>

@@ -1,0 +1,94 @@
+<!-- vistas/grupos.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+    <div>
+        <h1 style="margin: 0; font-size: 28px; color: var(--texto-principal);">👥 Directorio de Grupos</h1>
+        <p style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Administra tus salones y materias del ciclo escolar en curso.</p>
+    </div>
+    <!-- Botón conectado a la función del modal -->
+    <button style="background: var(--guinda); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 6px rgba(122, 28, 51, 0.2);" onclick="abrirModalCrearGrupo()">
+        + Crear Nuevo Grupo
+    </button>
+</div>
+
+<!-- Filtro Rápido (buscador en vivo: filtra las tarjetas ya renderizadas) -->
+<div style="background: var(--fondo-tarjeta); padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--borde); display: flex; gap: 15px;">
+    <input type="text" id="buscador-grupos" placeholder="🔍 Buscar por grupo o materia..." oninput="filtrarGrupos(this.value)" style="flex-grow: 1; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; outline: none; background: var(--fondo-app);">
+</div>
+
+<!-- Cuadrícula de Tarjetas de Grupos (VACÍA: se llena con el JSON del servidor).
+     El motor SPA inyecta aquí: loader "Cargando..." -> tarjetas dinámicas ->
+     estado vacío amigable si el backend responde []. -->
+<div id="contenedor-grupos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div>
+
+<!-- ==========================================
+     NUEVO MODAL INTELIGENTE: CREAR GRUPO
+     ========================================== -->
+<div id="modal-crear-grupo" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: var(--texto-principal);">➕ Registrar Nuevo Grupo</h2>
+            <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--texto-secundario);" onclick="cerrarModalCrearGrupo()">✖</button>
+        </div>
+
+        <!-- 1. Datos Generales -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div>
+                <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px;">NOMBRE DEL GRUPO</label>
+                <input type="text" placeholder="Ej. 1-A, 3°B..." style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; background: var(--fondo-app);">
+            </div>
+            <div>
+                <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px;">INSTITUCIÓN / ESCUELA</label>
+                <select id="select-escuela-nuevo-grupo" style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; background: var(--fondo-app);">
+                    <!-- VACÍO: se llena con las escuelas que devuelve URL_API_ESCUELAS -->
+                    <option disabled selected>Cargando escuelas...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2. Selector de Modelo Híbrido -->
+        <div style="background: #FDF9F3; border: 1px solid var(--dorado); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <label style="font-size: 12px; font-weight: bold; color: #92400E; display: block; margin-bottom: 10px;">MODELO EDUCATIVO</label>
+            <div style="display: flex; gap: 20px;">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                    <input type="radio" name="modeloGrupo" value="secundaria" checked onchange="cambiarModeloGrupo(this.value)" style="accent-color: var(--guinda);"> Secundaria (1 Materia)
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                    <input type="radio" name="modeloGrupo" value="primaria" onchange="cambiarModeloGrupo(this.value)" style="accent-color: var(--guinda);"> Primaria (Múltiples Materias)
+                </label>
+            </div>
+        </div>
+
+        <!-- 3. Contenedor Dinámico: Secundaria -->
+        <div id="contenedor-secundaria" style="display: block; padding: 15px; border: 1px solid var(--borde); border-radius: 8px; margin-bottom: 25px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--texto-principal);">📚 Asignar Materia</h3>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                <input type="text" placeholder="Nombre de la materia (Ej. Matemáticas I)" style="padding: 10px; border: 1px solid var(--borde); border-radius: 6px;">
+                <input type="text" placeholder="Horario / Días" style="padding: 10px; border: 1px solid var(--borde); border-radius: 6px;">
+            </div>
+        </div>
+
+        <!-- 3. Contenedor Dinámico: Primaria -->
+        <div id="contenedor-primaria" style="display: none; padding: 15px; border: 1px solid var(--dorado); border-radius: 8px; background: white; margin-bottom: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 14px; color: var(--texto-principal);">📚 Materias Asignadas al Grupo</h3>
+                <button style="background: white; border: 1px solid var(--dorado); color: var(--dorado); padding: 5px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;" onclick="agregarFilaMateria()">+ Añadir otra materia</button>
+            </div>
+            
+            <div id="lista-materias-primaria" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Fila de materia base -->
+                <div class="fila-materia" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: center;">
+                    <input type="text" placeholder="Nombre (Ej. Español)" style="padding: 10px; border: 1px solid var(--borde); border-radius: 6px;">
+                    <input type="text" placeholder="Horario" style="padding: 10px; border: 1px solid var(--borde); border-radius: 6px;">
+                    <button style="background: transparent; border: none; color: #DC2626; cursor: pointer; font-size: 16px; opacity: 0.5;" title="No se puede eliminar la materia principal">🗑️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción (Cero Bloqueos) -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button style="padding: 12px 20px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="cerrarModalCrearGrupo()">Cancelar</button>
+            <button id="btn-guardar-nuevo-grupo" style="padding: 12px 20px; background: var(--guinda); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="simularGuardadoGrupo()">💾 Guardar y Crear Grupo</button>
+        </div>
+    </div>
+</div>

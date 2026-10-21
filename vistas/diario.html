@@ -1,0 +1,61 @@
+<!-- vistas/diario.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div>
+        <h1 id="titulo-diario" style="margin: 0; font-size: 28px; color: var(--texto-principal);">✅ Control Diario: Grupo 3°B</h1>
+        <div style="display: flex; gap: 15px; margin-top: 8px; align-items: center;">
+            <!-- Acento dinámico: se reescribe con la materia real del grupo seleccionado -->
+            <span id="etiqueta-materia-diario" style="font-size: 14px; font-weight: bold; color: var(--guinda);">📚 Materia: ---</span>
+            <span style="color: var(--borde);">|</span>
+            <span style="font-size: 14px; color: var(--texto-secundario);">
+                Fecha: <input type="date" id="fecha-diario" style="padding: 5px; border: 1px solid var(--borde); border-radius: 4px; font-family: inherit; color: var(--texto-principal);">
+            </span>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <!-- Botón asíncrono Cero Bloqueos -->
+        <button id="btn-guardar-diario" style="background: var(--verde-bandera); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;" onclick="guardarControlDiario()">💾 Guardar Evaluación</button>
+    </div>
+</div>
+
+<!-- PANEL VISIBLE: Configuración y Criterios Dinámicos -->
+<div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; display: flex; align-items: center; border: 1px solid var(--borde); border-left: 4px solid var(--dorado); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+    <span style="font-size: 13px; font-weight: bold; color: var(--texto-secundario); text-transform: uppercase; margin-right: 15px;">¿Qué evaluaremos hoy?</span>
+    
+    <!-- Interruptores (Toggles) directos en la pantalla -->
+    <div style="display: flex; gap: 20px;">
+        <label style="display: flex; align-items: center; gap: 6px; cursor: not-allowed; font-size: 14px; font-weight: 500; color: var(--texto-principal);">
+            <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--guinda);"> ✋ Asistencia (Fija)
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--texto-principal);">
+            <input type="checkbox" id="toggle-tarea" checked onchange="alternarColumna('col-tarea', this.checked)" style="width: 18px; height: 18px; accent-color: var(--guinda);"> 📝 Tarea
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--texto-principal);">
+            <input type="checkbox" id="toggle-participacion" checked onchange="alternarColumna('col-participacion', this.checked)" style="width: 18px; height: 18px; accent-color: var(--guinda);"> 🗣️ Participación
+        </label>
+    </div>
+</div>
+
+<!-- TABLA TRANSACCIONAL INTERACTIVA -->
+<div style="background: var(--fondo-tarjeta); border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+        <thead style="background: var(--fondo-app);">
+            <tr style="border-bottom: 2px solid var(--borde);">
+                <th style="padding: 15px; color: var(--texto-secundario);">N° / Matrícula</th>
+                <th style="padding: 15px; color: var(--texto-secundario);">Nombre del Alumno</th>
+                <th class="col-asistencia" style="padding: 15px; text-align: center; color: var(--texto-secundario);">✋ Asistencia</th>
+                <th class="col-tarea" style="padding: 15px; text-align: center; color: var(--texto-secundario);">📝 Tarea</th>
+                <th class="col-participacion" style="padding: 15px; text-align: center; color: var(--texto-secundario);">🗣️ Participación</th>
+                <th style="padding: 15px; text-align: center; color: var(--texto-secundario);">📊 Desempeño Hoy</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpo-tabla-diario">
+            <!-- VACÍO: el motor SPA inyecta aquí loader "Cargando..." -> filas de alumnos
+                 construidas con el JSON del servidor -> estado vacío si la lista llega [] -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Establecer la fecha de hoy por defecto al cargar la vista
+    document.getElementById('fecha-diario').valueAsDate = new Date();
+</script>

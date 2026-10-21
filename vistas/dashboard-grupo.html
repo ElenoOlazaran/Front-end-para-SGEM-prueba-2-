@@ -1,0 +1,331 @@
+<!-- vistas/dashboard-grupo.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+    <div>
+        <button onclick="cargarVista('grupos')" style="background: none; border: none; color: var(--texto-secundario); cursor: pointer; font-weight: bold; margin-bottom: 10px; padding: 0; font-size: 14px; transition: 0.2s;">⬅ Volver a Mis Grupos</button>
+        <h1 id="titulo-dashboard-grupo" style="margin: 0; font-size: 28px; color: var(--texto-principal);">Dashboard: Grupo 3°B</h1>
+        <p id="subtitulo-dashboard-grupo" style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Múltiples Materias (Modelo Primaria)</p>
+    </div>
+    <button style="background: var(--verde-bandera); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;" onclick="cargarVista('diario')">✅ Ir al Control Diario</button>
+</div>
+
+<!-- Layout Principal de 2 Columnas -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+    
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Tarjeta de Promedio y Botones Modales -->
+        <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div>
+                <h3 style="margin: 0 0 5px 0; color: var(--texto-principal);">📊 Desempeño General</h3>
+                <p style="margin: 0; color: var(--texto-secundario); font-size: 14px;">Promedio actual del grupo: <strong id="promedio-general-grupo" style="color: var(--verde-bandera); font-size: 20px;">--</strong></p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="document.getElementById('modal-alumnos').style.display='flex'" style="background: var(--fondo-app); color: var(--texto-principal); border: 1px solid var(--borde); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">👥 Alumnos</button>
+                <button onclick="document.getElementById('modal-criterios').style.display='flex'" style="background: var(--fondo-app); color: var(--texto-principal); border: 1px solid var(--borde); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">⚙️ Criterios</button>
+                <!-- NUEVO BOTÓN: Reportes -->
+                <button onclick="document.getElementById('modal-reportes').style.display='flex'" style="background: var(--guinda); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">📄 Reportes</button>
+            </div>
+        </div>
+
+        <!-- Horario Semanal -->
+        <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border-top: 4px solid var(--guinda); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal);">⏱️ Horario de Clases</h3>
+                <span style="font-size: 12px; background: var(--fondo-app); padding: 4px 10px; border-radius: 20px; font-weight: bold; color: var(--texto-secundario);">Vista Semanal</span>
+            </div>
+            <!-- Cuadrícula semanal VACÍA: el JS pinta los 5 días con los bloques
+                 que devuelva el servidor para este grupo (loader + estado vacío) -->
+            <div id="cuadricula-horario" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; text-align: center;"></div>
+        </div>
+
+        <!-- Analítica Gamificada -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border-top: 4px solid var(--verde-bandera); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario); text-transform: uppercase;">⭐ Top 3 Calificaciones</h3>
+                <!-- VACÍO: ranking calculado por el backend y renderizado por el JS -->
+                <ul id="lista-top-calificaciones" style="list-style: none; padding: 0; margin: 0;"></ul>
+            </div>
+            <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border-top: 4px solid var(--dorado); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario); text-transform: uppercase;">🏆 Top 3 Asistencia</h3>
+                <!-- VACÍO: ranking calculado por el backend y renderizado por el JS -->
+                <ul id="lista-top-asistencia" style="list-style: none; padding: 0; margin: 0;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Panel de Notas Específicas del Grupo -->
+        <div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 20px; border-left: 4px solid var(--dorado); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 16px; color: var(--texto-principal);">📌 Notas del Grupo</h3>
+                <!-- Conectado al nuevo modal de notas -->
+                <button style="background: none; border: none; cursor: pointer; color: var(--guinda); font-weight: bold; font-size: 13px;" onclick="document.getElementById('modal-nueva-nota').style.display='flex'">+ Nuevo</button>
+            </div>
+            <!-- Notas dinámicas: loader -> notas reales del JSON -> estado vacío -->
+            <ul id="lista-notas-grupo" style="list-style: none; padding: 0; margin: 0; font-size: 13px; color: var(--texto-principal);"></ul>
+        </div>
+
+        <!-- Bóveda de Materiales -->
+        <div style="background: var(--fondo-app); border-radius: 12px; padding: 20px; border: 1px solid var(--borde);">
+            <h3 style="margin-top: 0; font-size: 16px; color: var(--texto-principal);">📁 Material de Clase</h3>
+            <p style="color: var(--texto-secundario); font-size: 12px; margin-top: -5px; margin-bottom: 15px;">Repositorio local.</p>
+            
+            <!-- Repositorio dinámico: el JS inyecta los archivos listados por el servidor -->
+            <div id="lista-archivos-grupo"></div>
+            
+            <!-- Input oculto y Botón conectado -->
+            <input type="file" id="input-archivo-oculto" style="display: none;" onchange="procesarArchivoAdjunto(this)">
+            <button id="btn-adjuntar" style="width: 100%; padding: 10px; font-size: 13px; font-weight: bold; background: white; color: var(--guinda); border: 1px dashed var(--guinda); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="document.getElementById('input-archivo-oculto').click()">+ Adjuntar Archivo</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     VENTANAS MODALES COMPLETAS
+     ========================================== -->
+
+<!-- Modal 1: Lista de Alumnos -->
+<div id="modal-alumnos" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 500px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0; color: var(--texto-principal);">Alumnos Registrados</h2>
+            <button id="btn-inscribir-alumno" style="background: var(--guinda); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="simularExito('btn-inscribir-alumno', '¡Alumno Inscrito!', 'var(--verde-bandera)', 'var(--guinda)')">+ Inscribir Alumno</button>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+            <thead style="background: var(--fondo-app);">
+                <tr style="border-bottom: 2px solid var(--borde);">
+                    <th style="padding: 10px; color: var(--texto-secundario);">Matrícula</th>
+                    <th style="padding: 10px; color: var(--texto-secundario);">Nombre Completo</th>
+                    <th style="padding: 10px; text-align: center; color: var(--texto-secundario);">Acciones</th>
+                </tr>
+            </thead>
+            <!-- VACÍO: el JS del dashboard inyecta aquí los alumnos reales (fetch al backend) -->
+            <tbody id="cuerpo-tabla-alumnos"></tbody>
+        </table>
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+            <button style="background: var(--fondo-app); color: var(--texto-principal); border: 1px solid var(--borde); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('modal-alumnos').style.display='none'">Cerrar Panel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Configuración de Criterios -->
+<div id="modal-criterios" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h2 style="margin: 0 0 5px 0; color: var(--texto-principal);">Criterios de Evaluación</h2>
+        <!-- SELECTOR DE PERIODO A EVALUAR CON BOTÓN DE AÑADIR -->
+        <div style="background: var(--fondo-app); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--borde);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario);">Configurando valores para:</label>
+                <button style="background: none; border: none; color: var(--guinda); font-weight: bold; font-size: 11px; cursor: pointer; padding: 0;" onclick="document.getElementById('caja-nuevo-periodo').style.display='flex'">+ Añadir Periodo</button>
+            </div>
+            
+            <select id="selector-periodo" style="width: 100%; padding: 8px; border: 1px solid var(--borde); border-radius: 6px; font-size: 14px; background: white; color: var(--guinda); font-weight: bold; outline: none;">
+                <option>1er Trimestre / Parcial 1</option>
+                <option>2do Trimestre / Parcial 2</option>
+            </select>
+
+            <!-- Cero Fricción: Input oculto que aparece al darle a "+ Añadir Periodo" -->
+            <div id="caja-nuevo-periodo" style="display: none; margin-top: 10px; gap: 8px;">
+                <input type="text" id="input-nuevo-periodo" placeholder="Ej. 3er Trimestre, Proyecto Final..." style="flex: 1; padding: 6px 10px; border: 1px solid var(--borde); border-radius: 4px; font-size: 12px; outline: none;">
+                <button style="background: var(--verde-bandera); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;" onclick="guardarNuevoPeriodo()">Añadir</button>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--borde); padding-bottom: 10px;">
+            <span style="font-weight: 500; color: var(--texto-principal);">✋ Asistencia</span>
+            <div><input type="number" value="10" style="width: 50px; padding: 6px; border: 1px solid var(--borde); border-radius: 6px; text-align: center;"> %</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--borde); padding-bottom: 10px;">
+            <span style="font-weight: 500; color: var(--texto-principal);">📝 Tareas</span>
+            <div><input type="number" value="30" style="width: 50px; padding: 6px; border: 1px solid var(--borde); border-radius: 6px; text-align: center;"> %</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--borde); padding-bottom: 10px;">
+            <span style="font-weight: 500; color: var(--texto-principal);">🗣️ Participación</span>
+            <div><input type="number" value="20" style="width: 50px; padding: 6px; border: 1px solid var(--borde); border-radius: 6px; text-align: center;"> %</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span style="font-weight: 500; color: var(--texto-principal);">📄 Examen</span>
+            <div><input type="number" value="40" style="width: 50px; padding: 6px; border: 1px solid var(--borde); border-radius: 6px; text-align: center;"> %</div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button style="padding: 10px 15px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--texto-principal);" onclick="document.getElementById('modal-criterios').style.display='none'">Cancelar</button>
+            <button id="btn-guardar-criterios" style="padding: 10px 15px; background: var(--guinda); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;" onclick="guardarCriterios()">💾 Guardar Periodo</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3: Agregar Nueva Nota -->
+<div id="modal-nueva-nota" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h2 style="margin: 0 0 15px 0; color: var(--texto-principal);">📌 Nueva Nota del Grupo</h2>
+        <textarea id="texto-nueva-nota" rows="4" placeholder="Escribe tu recordatorio aquí..." style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; margin-bottom: 20px; resize: none; font-family: inherit;"></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button style="padding: 10px 15px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--texto-principal);" onclick="document.getElementById('modal-nueva-nota').style.display='none'">Cancelar</button>
+            <button id="btn-guardar-nota" style="padding: 10px 15px; background: var(--dorado); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;" onclick="agregarNotaGrupo()">Guardar Nota</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     NUEVO: MODAL INTELIGENTE DE REPORTES (CON VISTA PREVIA)
+     ========================================== -->
+<div id="modal-reportes" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+                <h2 style="margin: 0 0 5px 0; color: var(--texto-principal);">📄 Reportes y Sábanas de Calificación</h2>
+                <p style="color: var(--texto-secundario); font-size: 13px; margin: 0;">Filtra, visualiza y exporta los resultados para la institución.</p>
+            </div>
+            <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--texto-secundario);" onclick="document.getElementById('modal-reportes').style.display='none'">✖</button>
+        </div>
+
+        <!-- ==========================================
+             ZONA DE FILTROS (Lógica Híbrida Primaria/Secundaria)
+             ========================================== -->
+        <div style="background: var(--fondo-app); padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
+            
+            <!-- Paso 1: Filtro de Materia (Se oculta en Secundaria, se muestra en Primaria) -->
+            <div id="filtro-materia-primaria" style="flex: 1;">
+                <label style="font-size: 11px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px; text-transform: uppercase;">Materia (Primaria)</label>
+                <select style="width: 100%; padding: 8px; border: 1px solid var(--borde); border-radius: 6px; font-size: 13px; background: white; color: var(--guinda); font-weight: bold; outline: none;">
+                    <!-- VACÍO: se llena con las materias reales del grupo modelo Primaria -->
+                    <option disabled selected>Selecciona una materia...</option>
+                </select>
+            </div>
+
+            <!-- Paso 2: Filtro de Periodo -->
+            <div style="flex: 1;">
+                <label style="font-size: 11px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px; text-transform: uppercase;">Periodo de Evaluación</label>
+                <select style="width: 100%; padding: 8px; border: 1px solid var(--borde); border-radius: 6px; font-size: 13px; background: white; color: var(--texto-principal); outline: none;">
+                    <option>1er Trimestre / Parcial 1</option>
+                    <option>2do Trimestre / Parcial 2</option>
+                    <option>Promedio Final (Anual)</option>
+                </select>
+            </div>
+
+            <button style="padding: 9px 15px; background: var(--texto-principal); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s;" onclick="simularCargaDatos()">🔄 Cargar Vista Previa</button>
+        </div>
+
+        <!-- ==========================================
+             VISTA PREVIA DE LOS DATOS (Sábana de Calificaciones)
+             ========================================== -->
+        <div style="border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+            <div style="background: var(--fondo-app); padding: 10px 15px; border-bottom: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; font-weight: bold; color: var(--texto-secundario);">VISTA PREVIA DEL DOCUMENTO</span>
+                <!-- Etiqueta reescrita por el JS según los filtros aplicados -->
+                <span id="etiqueta-vista-previa" style="font-size: 12px; color: var(--guinda); font-weight: bold;">Sin filtros aplicados</span>
+            </div>
+            
+            <div style="max-height: 250px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead style="background: white; position: sticky; top: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <tr>
+                            <th style="padding: 10px 15px; color: var(--texto-secundario); border-bottom: 1px solid var(--borde);">Matrícula</th>
+                            <th style="padding: 10px 15px; color: var(--texto-secundario); border-bottom: 1px solid var(--borde);">Nombre del Alumno</th>
+                            <th style="padding: 10px 15px; text-align: center; color: var(--texto-secundario); border-bottom: 1px solid var(--borde);">Asistencia (10%)</th>
+                            <th style="padding: 10px 15px; text-align: center; color: var(--texto-secundario); border-bottom: 1px solid var(--borde);">Tareas (30%)</th>
+                            <th style="padding: 10px 15px; text-align: center; color: var(--guinda); font-weight: bold; border-bottom: 1px solid var(--borde);">🏆 Calif. Final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-vista-previa">
+                        <!-- VACÍO: se llena al pulsar "Cargar Vista Previa" con los datos
+                             de calificaciones según filtros; [] = estado vacío amigable -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             BOTONES DE EXPORTACIÓN (Plantillas Automatizadas)
+             ========================================== -->
+        <div style="background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px dashed var(--borde);">
+            <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--texto-secundario); text-align: center;">Generar documento oficial usando las plantillas locales predefinidas.</p>
+            <div style="display: flex; gap: 15px;">
+                <!-- Cero Bloqueos: Función asíncrona simulando generación -->
+                <button id="btn-excel" style="flex: 1; padding: 12px; background: #15803D; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: 0.2s;" onclick="simularExportacion('btn-excel', '📗 Generar Excel')">
+                    📗 Generar Excel
+                </button>
+                <button id="btn-pdf" style="flex: 1; padding: 12px; background: #DC2626; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: 0.2s;" onclick="simularExportacion('btn-pdf', '📕 Generar PDF')">
+                    📕 Generar PDF
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Lógica de interacciones (Cero Bloqueos) -->
+<script>
+    /**
+     * Carga la vista previa de la sábana de calificaciones según los filtros.
+     * Patrón estándar: loader en el tbody -> fetch real -> filas JSON | vacío | error.
+     * La ruta debe apuntar al endpoint de calificaciones filtradas del backend Java.
+     */
+    async function simularCargaDatos() {
+        const URL_DATOS_CALIFICACIONES = URL_API_DASHBOARD; // POST/GET con parámetros de filtro
+        const tbody = document.getElementById('cuerpo-tabla-vista-previa');
+        const etiqueta = document.getElementById('etiqueta-vista-previa');
+        const cargando = `
+            <tr><td colspan="5" style="padding: 25px; text-align: center; color: var(--texto-secundario);">
+                <div class="spinner" style="margin: 0 auto 10px;"></div>Cargando...
+            </td></tr>`;
+
+        tbody.innerHTML = cargando; // Estado de carga visible sin bloquear la ventana
+
+        try {
+            const respuesta = await fetch(URL_DATOS_CALIFICACIONES);
+            if (!respuesta.ok) throw new Error('HTTP ' + respuesta.status);
+            const datos = await respuesta.json();
+
+            if (!datos || !datos.alumnos || datos.alumnos.length === 0) {
+                // Arreglo vacío []: mensaje amigable dentro de la propia tabla
+                tbody.innerHTML = `
+                    <tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--texto-secundario);">
+                        📭 <b>No hay calificaciones registradas para esta selección</b><br>
+                        Verifica los filtros o registra evaluaciones primero.
+                    </td></tr>`;
+                etiqueta.innerText = 'Sin datos para los filtros aplicados';
+            } else {
+                // Render iterativo de la sábana con los datos reales del servidor
+                tbody.innerHTML = datos.alumnos.map(a => `
+                    <tr style="border-bottom: 1px solid var(--borde);">
+                        <td style="padding: 10px 15px; font-weight: 500; color: var(--texto-secundario);">${a.matricula}</td>
+                        <td style="padding: 10px 15px; color: var(--texto-principal);">${a.nombre}</td>
+                        <td style="padding: 10px 15px; text-align: center;">${a.asistencia}</td>
+                        <td style="padding: 10px 15px; text-align: center;">${a.tareas}</td>
+                        <td style="padding: 10px 15px; text-align: center; font-weight: bold; color: var(--verde-bandera);">${a.final}</td>
+                    </tr>`).join('');
+                // Etiqueta con la materia/periodo elegidos en los selects del filtro
+                const selects = document.querySelectorAll('#modal-reportes select');
+                etiqueta.innerText = Array.from(selects).map(s => s.value).filter(Boolean).join(' | ');
+            }
+        } catch (error) {
+            console.error('Error al cargar la vista previa:', error);
+            tbody.innerHTML = `
+                <tr><td colspan="5" class="estado-error">⚠️ No se pudo conectar con el servidor. Revisa que el backend esté activo.</td></tr>`;
+        }
+    }
+
+    function simularExportacion(idBoton, textoOriginal) {
+        const btn = document.getElementById(idBoton);
+        btn.innerText = "⏳ Generando documento...";
+        btn.style.opacity = "0.7";
+        btn.style.pointerEvents = "none";
+        
+        // TODO: conexión con la generación de plantillas del backend Java
+        
+        // Feedback asíncrono del Backend (Java rellenando placeholders)
+        setTimeout(() => { 
+            btn.innerText = "¡Archivo Guardado! ✔"; 
+            btn.style.opacity = "1";
+            btn.style.background = "var(--verde-bandera)";
+            
+            setTimeout(() => {
+                btn.innerText = textoOriginal;
+                btn.style.background = idBoton === 'btn-excel' ? '#15803D' : '#DC2626';
+                btn.style.pointerEvents = "auto";
+            }, 2500);
+        }, 1500);
+    }
+</script>

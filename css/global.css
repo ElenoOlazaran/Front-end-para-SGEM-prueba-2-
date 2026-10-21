@@ -1,0 +1,172 @@
+/* ==========================================
+   VARIABLES GLOBALES (Paleta Institucional)
+   ========================================== */
+:root {
+    --guinda: #7A1C33;
+    --guinda-oscuro: #5A1425;
+    --dorado: #B38E5D;
+    --dorado-claro: #d4b58e;
+    --verde-bandera: #10B981; /* Verde moderno para "Éxito" / "Guardado" */
+    
+    --fondo-app: #F4F4F5;
+    --fondo-tarjeta: #FFFFFF;
+    --texto-principal: #1F2937;
+    --texto-secundario: #6B7280;
+    --borde: #E5E7EB;
+    
+    --sidebar-bg: #111827;
+    --sidebar-hover: #1F2937;
+}
+
+/* ==========================================
+   RESETEO Y ESTRUCTURA BASE
+   ========================================== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--fondo-app);
+    color: var(--texto-principal);
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* Evita el scroll global, solo scrollea el contenido */
+}
+
+/* ==========================================
+   MENÚ LATERAL (SIDEBAR)
+   ========================================== */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    border-bottom: 1px solid var(--sidebar-hover);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--dorado);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.menu-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+    background-color: var(--sidebar-hover);
+    border-left-color: var(--dorado-claro);
+}
+
+.menu-item.activo {
+    background-color: var(--guinda);
+    border-left-color: var(--dorado);
+    font-weight: bold;
+}
+
+.sidebar-footer {
+    margin-top: auto; /* Empuja estos botones al fondo */
+    border-top: 1px solid var(--sidebar-hover);
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* ==========================================
+   ESTADOS DINÁMICOS (Carga / Vacío / SPA)
+   ========================================== */
+
+/* Animación genérica de aparición (usada por vistas y elementos inyectados) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Estado de carga: se inyecta dentro de un contenedor mientras llega el fetch() */
+.cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: var(--texto-secundario);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Aro giratorio en tono guinda institucional */
+.cargando .spinner {
+    width: 34px;
+    height: 34px;
+    border: 4px solid var(--borde);
+    border-top-color: var(--guinda);
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Estado vacío: reemplaza al loader cuando el servidor responde [] */
+.estado-vacio {
+    background: var(--fondo-tarjeta);
+    border: 2px dashed var(--borde);
+    border-radius: 12px;
+    padding: 45px 20px;
+    text-align: center;
+    color: var(--texto-secundario);
+    animation: fadeIn 0.4s ease;
+    grid-column: 1 / -1; /* Ocupa todo el ancho dentro de las cuadrículas */
+}
+
+.estado-vacio .icono-vacio {
+    font-size: 38px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.estado-vacio .titulo-vacio {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--texto-principal);
+}
+
+.estado-vacio .detalle-vacio {
+    margin: 6px 0 0 0;
+    font-size: 13px;
+}
+
+/* Estado de error de red (servidor Java apagado, ruta incorrecta, etc.) */
+.estado-error {
+    grid-column: 1 / -1;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: #991B1B;
+    font-size: 14px;
+    font-weight: 500;
+    animation: fadeIn 0.4s;
+}

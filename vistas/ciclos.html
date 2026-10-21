@@ -1,0 +1,71 @@
+<!-- vistas/ciclos.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+    <div>
+        <h1 style="margin: 0; font-size: 28px; color: var(--texto-principal);">📅 Ciclos Escolares</h1>
+        <p style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Archiva y organiza tus periodos académicos pasados y actuales.</p>
+    </div>
+    <!-- Botón de creación -->
+     <button style="background: var(--guinda); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(122, 28, 51, 0.2);" onclick="document.getElementById('modal-agregar-ciclo').style.display='flex'">
+        + Agregar Nuevo Ciclo
+    </button>
+</div>
+
+<!-- Cuadrícula de Tarjetas de Ciclos (VACÍA: el motor SPA inyecta aquí
+     loader "Cargando..." -> tarjetas dinámicas -> estado vacío si el servidor responde []) -->
+<div id="contenedor-ciclos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div>
+
+<!-- ==========================================
+     MODALES OCULTOS (Lógica de Seguridad)
+     ========================================== -->
+
+<!-- Modal 1: Panel de Edición -->
+<div id="modal-editar-ciclo" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h2 style="margin: 0 0 15px 0; color: var(--texto-principal);">Editar Ciclo</h2>
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: var(--texto-secundario);">Nombre del Ciclo</label>
+        <input type="text" value="Semestre 2026-B" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none;">
+        
+        <!-- Zona de Peligro -->
+        <div style="border-top: 1px dashed #FCA5A5; padding-top: 15px; margin-top: 10px; background: #FEF2F2; padding: 15px; border-radius: 8px;">
+            <p style="font-size: 13px; color: #991B1B; margin: 0 0 10px 0; font-weight: bold;">⚠️ Opciones Avanzadas</p>
+            <button style="width: 100%; padding: 10px; background: white; color: #DC2626; border: 1px solid #F87171; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="mostrarConfirmacionCierre()">🔒 Cerrar este Ciclo Escolar</button>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
+            <button style="padding: 10px 15px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--texto-principal);" onclick="cerrarModalesCiclo()">Cancelar</button>
+            <button style="padding: 10px 15px; background: var(--guinda); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="cerrarModalesCiclo()">Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Confirmación de Cierre (Doble Seguridad) -->
+<div id="modal-confirmacion-cierre" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1001; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+        <div style="font-size: 45px; margin-bottom: 10px;">⚠️</div>
+        <h2 style="margin: 0 0 10px 0; color: #DC2626;">¿Estás completamente seguro?</h2>
+        <p style="font-size: 14px; color: var(--texto-secundario); line-height: 1.5; margin-bottom: 25px;">
+            Al cerrar el ciclo, los datos pasarán a modo <b>"Solo Lectura"</b>. No podrás modificar las calificaciones, criterios ni asistencias de los grupos asociados a este periodo.
+        </p>
+        
+        <div style="display: flex; gap: 10px;">
+            <button style="flex: 1; padding: 12px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--texto-principal);" onclick="volverAEdicion()">No, cancelar</button>
+            <button style="flex: 1; padding: 12px; background: #DC2626; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="cerrarModalesCiclo()">Sí, Cerrar Ciclo</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-agregar-ciclo" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h2 style="margin: 0 0 15px 0; color: var(--texto-principal);">📅 Iniciar Nuevo Ciclo</h2>
+        <p style="color: var(--texto-secundario); font-size: 13px; margin-bottom: 20px;">Crea un nuevo periodo académico. El ciclo anterior pasará a modo "Solo Lectura" para proteger tus registros históricos.</p>
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 12px; color: var(--texto-secundario);">NOMBRE DEL CICLO</label>
+        <input type="text" placeholder="Ej. Semestre 2027-A" style="width: 100%; padding: 10px; margin-bottom: 25px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none;">
+        
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button style="padding: 10px 15px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--texto-principal);" onclick="document.getElementById('modal-agregar-ciclo').style.display='none'">Cancelar</button>
+            <button id="btn-guardar-nuevo-ciclo" style="padding: 10px 15px; background: var(--guinda); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="simularExitoCiclo()">💾 Crear Ciclo</button>
+        </div>
+    </div>
+</div>

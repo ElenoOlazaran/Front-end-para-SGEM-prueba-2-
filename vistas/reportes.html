@@ -1,0 +1,86 @@
+<!-- vistas/reportes.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+    <div>
+        <h1 style="margin: 0; font-size: 28px; color: var(--texto-principal);">🗂️ Historial de Reportes</h1>
+        <p style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Consulta y exporta calificaciones de ciclos escolares cerrados.</p>
+    </div>
+</div>
+
+<!-- PANEL DE BÚSQUEDA (El Embudo) -->
+<div style="background: var(--fondo-tarjeta); border-radius: 12px; padding: 25px; border: 1px solid var(--borde); border-top: 4px solid var(--dorado); margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: end;">
+        
+        <!-- Paso 1: Ciclo -->
+        <div>
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 8px;">1. CICLO ESCOLAR ARCHIVADO</label>
+            <select id="filtro-hist-ciclo" style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; background: var(--fondo-app); outline: none;" onchange="activarFiltroHistorial('filtro-hist-escuela')">
+                <!-- VACÍO: se llena con los ciclos CERRADOS que devuelva el servidor -->
+                <option value="" disabled selected>Selecciona un ciclo cerrado...</option>
+            </select>
+        </div>
+
+        <!-- Paso 2: Escuela -->
+        <div>
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 8px;">2. INSTITUCIÓN</label>
+            <select id="filtro-hist-escuela" disabled style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; background: var(--fondo-app); outline: none; opacity: 0.5;" onchange="activarFiltroHistorial('filtro-hist-grupo')">
+                <!-- VACÍO: se llena con las escuelas del ciclo seleccionado -->
+                <option value="" disabled selected>Selecciona una escuela...</option>
+            </select>
+        </div>
+
+        <!-- Paso 3: Grupo -->
+        <div>
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 8px;">3. GRUPO</label>
+            <select id="filtro-hist-grupo" disabled style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; background: var(--fondo-app); outline: none; opacity: 0.5;" onchange="activarBotonBusqueda()">
+                <!-- VACÍO: se llena con los grupos de la escuela seleccionada -->
+                <option value="" disabled selected>Selecciona un grupo...</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+        <button id="btn-buscar-historial" disabled style="background: var(--guinda); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: not-allowed; font-size: 14px; opacity: 0.5; transition: 0.2s;" onclick="mostrarResultadosHistorial()">
+            🔍 Buscar Resultados
+        </button>
+    </div>
+</div>
+
+<!-- RESULTADOS HISTÓRICOS (Oculto hasta buscar) -->
+<div id="panel-resultados-historial" style="display: none; animation: fadeIn 0.5s;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <!-- Textos reescritos por el JS con los filtros realmente elegidos -->
+        <h2 id="titulo-resultados-historial" style="margin: 0; font-size: 20px; color: var(--texto-principal);">Resultados históricos</h2>
+        <div style="display: flex; gap: 10px;">
+            <!-- Exportación Oficial Cero Bloqueos -->
+            <button id="btn-exp-hist-excel" style="padding: 10px 15px; background: #15803D; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;" onclick="simularExportacionHistorial('btn-exp-hist-excel', '📗 Excel', '#15803D')">📗 Exportar Excel</button>
+            <button id="btn-exp-hist-pdf" style="padding: 10px 15px; background: #DC2626; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;" onclick="simularExportacionHistorial('btn-exp-hist-pdf', '📕 PDF', '#DC2626')">📕 Exportar PDF</button>
+        </div>
+    </div>
+
+    <!-- NUEVO: Panel de Promedio General -->
+    <div style="background: var(--fondo-tarjeta); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--borde); border-left: 4px solid var(--verde-bandera); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="font-size: 14px; font-weight: bold; color: var(--texto-secundario); text-transform: uppercase;">📊 Promedio General del Grupo</span>
+        <span id="promedio-general-historial" style="font-size: 22px; font-weight: bold; color: var(--verde-bandera);">--</span>
+    </div>
+
+    <!-- Sábana de Calificaciones en Solo Lectura -->
+    <div style="background: var(--fondo-tarjeta); border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="background: #FEF2F2; color: #991B1B; padding: 10px 15px; font-size: 12px; font-weight: bold; text-align: center; border-bottom: 1px solid #FCA5A5;">
+            🔒 MODO SOLO LECTURA. ESTE CICLO FUE CERRADO Y NO PUEDE SER MODIFICADO.
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+            <thead style="background: var(--fondo-app);">
+                <tr style="border-bottom: 2px solid var(--borde);">
+                    <th style="padding: 15px; color: var(--texto-secundario);">Matrícula</th>
+                    <th style="padding: 15px; color: var(--texto-secundario);">Nombre del Alumno</th>
+                    <th style="padding: 15px; text-align: center; color: var(--texto-secundario);">Promedio Final</th>
+                    <th style="padding: 15px; text-align: center; color: var(--texto-secundario);">Estatus</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-tabla-historial">
+                <!-- VACÍO: el JS inyecta el loader y después las filas del JSON histórico
+                     Response [] = estado vacío ("sin registros en ese momento") -->
+            </tbody>
+        </table>
+    </div>
+</div>

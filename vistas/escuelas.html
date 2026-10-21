@@ -1,0 +1,40 @@
+<!-- vistas/escuelas.html -->
+<div class="vista-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+    <div>
+        <h1 style="margin: 0; font-size: 28px; color: var(--texto-principal);">🏛️ Directorio de Escuelas</h1>
+        <p style="margin: 5px 0 0 0; color: var(--texto-secundario); font-size: 15px;">Gestiona las instituciones educativas donde impartes clases.</p>
+    </div>
+    <button style="background: var(--guinda); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(122, 28, 51, 0.2);" onclick="document.getElementById('modal-crear-escuela').style.display='flex'">
+        + Registrar Nueva Escuela
+    </button>
+</div>
+
+<!-- Cuadrícula de Tarjetas de Escuelas (VACÍA: se llena con el JSON del servidor) -->
+<div id="contenedor-escuelas" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div>
+
+<!-- Modal: Registrar Nueva Escuela -->
+<div id="modal-crear-escuela" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h2 id="titulo-modal-escuela" style="margin: 0 0 15px 0; color: var(--texto-principal);">🏛️ Registrar Institución</h2>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px;">NOMBRE DE LA ESCUELA</label>
+            <input type="text" id="input-escuela-nombre" placeholder="Ej. Escuela Primaria Federal..." style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; outline: none;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px;">CCT (CLAVE DEL CENTRO DE TRABAJO) - Opcional</label>
+            <input type="text" id="input-escuela-cct" placeholder="Ej. 28DPR..." style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; outline: none;">
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 5px;">UBICACIÓN / NOTAS</label>
+            <input type="text" id="input-escuela-ubicacion" placeholder="Zona, turno o dirección..." style="width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; box-sizing: border-box; outline: none;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button style="padding: 10px 15px; background: var(--fondo-app); border: 1px solid var(--borde); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--texto-principal);" onclick="document.getElementById('modal-crear-escuela').style.display='none'">Cancelar</button>
+            <button id="btn-guardar-escuela" style="padding: 10px 15px; background: var(--guinda); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="simularGuardadoEscuela()">💾 Guardar Escuela</button>
+        </div>
+    </div>
+</div>
